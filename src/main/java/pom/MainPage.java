@@ -4,6 +4,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.JavascriptExecutor;
 
 public class MainPage {
     private final WebDriver driver;
@@ -38,13 +40,28 @@ public class MainPage {
     public void clickButtonOrder() {
         driver.findElement(orderLower).click();
     }
-    //клик по аккордеону
-    public void clickQuestionToggle(int index) {
-        driver.findElement(By.id("accordion__heading-" + index)).click();
-    }
 
-    //возвращаем текст вложенный из аккордеона
-    public String getAnswerText(int index) {
-        return driver.findElement(By.id("accordion__panel-" + index)).getText();
+    //клик по заголовку
+    public void openFaqByIndex(int index) {
+        String headingId = "accordion__heading-" + index;
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        WebElement heading = wait.until(ExpectedConditions.elementToBeClickable(By.id(headingId)));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", heading);
+        heading.click();
+    }
+    //получение вопроса
+    public String getFaqQuestionTextByIndex(int index) {
+        String headingId = "accordion__heading-" + index;
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        WebElement heading = wait.until(ExpectedConditions.presenceOfElementLocated(By.id(headingId)));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", heading);
+        return heading.getText().trim();
+    }
+    //получение ответа
+    public String getFaqAnswerTextByIndex(int index) {
+        String panelId = "accordion__panel-" + index;
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(panelId)));
+        return driver.findElement(By.id(panelId)).getText().trim();
     }
 }
